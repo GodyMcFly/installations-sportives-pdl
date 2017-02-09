@@ -1,25 +1,18 @@
-import csv
+class Activite:
 
-#
-# Ouverture du fichier source.
-#
-# D'après la documentation, le mode ''b'' est
-# *obligatoire* sur les plate-formes où il est
-# significatif. Dans la pratique, il est conseillé
-# de toujours le mettre.
-#
+	def __init__(self, numero, nom):
+		self.numero = numero
+		self.nom = nom
 
-fname = "csv/activites.csv"
-fileActivites = open(fname, "r")
+	def _get_numero(self):
+		return self.numero
 
-try:
-    # Création du ''lecteur'' CSV.
-    reader = csv.reader(fileActivites)
+	def _get_nom(self):
+		return self.nom
 
-    # Le ''lecteur'' est itérable, et peut être utilisé dans une boucle ''for'' pour extraire les lignes une par une.
-    for row in reader:
-	       print(row)
+	def _set_numero(self, numero):
+		self.numero = numero
 
-finally:
-    # Fermeture du fichier source
-    fileActivites.close()
+	def _set_nom(self, nom):
+		self.nom = nom
+
