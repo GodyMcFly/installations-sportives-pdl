@@ -24,36 +24,57 @@ class installations:
         self.latitude = latitude
         self.longitude = longitude
 
+        try:
+          connexion = mysql.connector.connect(user='E155530E', password='E155530E',
+                                  host='localhost')
+        except mysql.connector.Error as erreur:
+                print("Problème avec la base de donnée")
 
-    try:
-      connexion = mysql.connector.connect(user='E155530E', password='E155530E',
-                              host='localhost')
-    except mysql.connector.Error as erreur:
-      if erreur.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        print("Problème avec l'identifiant ou le mot de passe")
-    elif erreur.errno == errorcode.ER_BAD_DB_ERROR:
-        print("La base de données n'existe pas")
-      else:
-        print(erreur)
-    else:
-      connexion.close()
-
-    DB_NAME = 'E155530E'
+        DB_NAME='E155530E'
 
 
+    """Getters and Setters"""
+
+    def _set_numero(leNum):
+        self.nom = leNum
+
+    def _set_nom(leNom):
+        self.nom = leNom
+
+    def _set_cp(leCp):
+        self.nom = leNom
+
+    def _set_ville(laVille):
+        self.nom = laVille
+
+    def _set_nom(laLatitude):
+        self.nom = laLatitude
+
+    def _set_nom(laLongitude):
+        self.nom = laLongitude
 
 
-fname = "csv/installations.csv"
-fileInstallations = open(fname, "r")
 
-try:
-    # Création du ''lecteur'' CSV.
-    reader = csv.reader(fileInstallations)
 
-    # Le ''lecteur'' est itérable, et peut être utilisé dans une boucle ''for'' pour extraire les lignes une par une.
-    for row in reader:
-	       print(row)
 
-finally:
-    # Fermeture du fichier source
-    fileInstallations.close()
+    def lecture(self):
+        fname = "csv/installations.csv"
+        fileInstallations = open(fname, "r")
+
+        try:
+            # Création du ''lecteur'' CSV.
+            reader = csv.reader(fileInstallations)
+
+            # Le ''lecteur'' est itérable, et peut être utilisé dans une boucle ''for'' pour extraire les lignes une par une.
+            for row in reader:
+        	       print(row)
+
+        finally:
+            # Fermeture du fichier source
+            fileInstallations.close()
+
+    def geocoding(self, row):
+
+
+installations = Installations(1, "nom", "cp", "ville", "latitude", "longitude")
+installations.lecture()
