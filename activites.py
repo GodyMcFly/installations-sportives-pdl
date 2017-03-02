@@ -1,3 +1,5 @@
+import csv
+
 class Activite:
 
 	def __init__(self, numero, nom):
@@ -15,4 +17,14 @@ class Activite:
 
 	def _set_nom(self, nom):
 		self.nom = nom
+
+	def Lecture(self, fichier):
+		with open(fichier) as csvfile:
+			reader = csv.DictReader(csvfile)
+			for row in reader:
+				print(row)
+
+activite = Activite(1,"lol")
+activite.Lecture("csv/activites.csv")
+activite._get_nom()
 
