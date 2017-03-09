@@ -1,9 +1,10 @@
 import csv
+from dao import *
 
 class Activite:
 
-	def __init__(self, numero, nom):
-		self.numero = numero
+	def __init__(self, identifiant, nom):
+		self.identifiant = identifiant
 		self.nom = nom
 
 	def _get_numero(self):
@@ -24,7 +25,13 @@ class Activite:
 			for row in reader:
 				print(row)
 
-activite = Activite(1,"lol")
-activite.Lecture("csv/activites.csv")
-activite._get_nom()
+	def ajout(self):
+		ajoutActivte = 'INSERT IGNORE INTO activite VALUES ("{}","{}")'.format(self.identifiant, self.nom)
+
+		db = DAO()
+		db.execute("LOCK TABLES `activite` WRITE;")
+		db.execute("SET foreign_key_checks = 0")		
+		db.execute(ajoutActivte)
+		db.execute("SET foreign_key_checks = 1")
+
 
