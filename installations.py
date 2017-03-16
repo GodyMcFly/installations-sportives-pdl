@@ -1,80 +1,84 @@
 import csv
-import mysql.connector
+from dao import *
+
+# -*- coding: utf-8 -*-
 
 class installations:
 
     """
-    Classe définissant les installations caractérisée par :
-    - le numéro
+    Classe definissant les installations caracterisee par :
+    - le numero
     - le nom
+    - l adresse
     - le code postal
     - la ville
     - la latitude
     - la longitude
     """
 
-    def __init__(self, numero, nom, cp, ville, latitude, longitude):
+    def __init__(self):
 
         """Constructeur de notre classe"""
-
-        self.numero = numero
-        self.nom = nom
-        self.cp = cp
-        self.ville = ville
-        self.latitude = latitude
-        self.longitude = longitude
-
-        try:
-          connexion = mysql.connector.connect(user='E155530E', password='E155530E',
-                                  host='localhost')
-        except mysql.connector.Error as erreur:
-                print("Problème avec la base de donnée")
-
-        DB_NAME='E155530E'
 
 
     """Getters and Setters"""
 
-    def _set_numero(leNum):
-        self.nom = leNum
+    def _set_numero(self, leNum):
+        self.numero = leNum
 
-    def _set_nom(leNom):
+    def _set_nom(self, leNom):
         self.nom = leNom
 
-    def _set_cp(leCp):
-        self.nom = leNom
+    def _set_adresse(self, lAdresse):
+        self.numero = lAdresse
 
-    def _set_ville(laVille):
-        self.nom = laVille
+    def _set_cp(self, leCp):
+        self.cp = leCp
 
-    def _set_nom(laLatitude):
-        self.nom = laLatitude
+    def _set_ville(self, laVille):
+        self.ville = laVille
 
-    def _set_nom(laLongitude):
-        self.nom = laLongitude
+    def _set_nom(self, laLatitude):
+        self.latitude = laLatitude
 
-
-
-
-
-    def lecture(self):
-        fname = "csv/installations.csv"
-        fileInstallations = open(fname, "r")
-
-        try:
-            # Création du ''lecteur'' CSV.
-            reader = csv.reader(fileInstallations)
-
-            # Le ''lecteur'' est itérable, et peut être utilisé dans une boucle ''for'' pour extraire les lignes une par une.
-            for row in reader:
-        	       print(row)
-
-        finally:
-            # Fermeture du fichier source
-            fileInstallations.close()
-
-    def geocoding(self, row):
+    def _set_nom(self, laLongitude):
+        self.longitude = laLongitude
 
 
-installations = Installations(1, "nom", "cp", "ville", "latitude", "longitude")
-installations.lecture()
+    def _get_num():
+        return self.nom
+
+    def _get_numero():
+        return self.numero
+
+    def _get_adresse():
+        return self.adresse
+
+    def _get_cp():
+        return self.cp
+
+    def _get_ville():
+        return self.ville
+
+    def _get_latitude():
+        return self.latitude
+
+    def _get_longitude():
+        return self.longitude
+
+
+    def importInstallations(self, fichier):
+		with open(fichier) as csvfile:
+			reader = csv.reader(csvfile)
+			for row in reader:
+				self.ajoutInstallations(row[1], row[0], (row[5]+" "+row[6]+" "+row[7]), row[4], row[2], row[10], row[9])
+
+
+    def ajoutInstallations(self, numero, nom, adresse, cp, ville, latitude, longitude):
+		ajoutInstallations = 'INSERT IGNORE INTO installation VALUES ("{}", "{}", "{}", "{}", "{}", "{}", "{}")'.format(numero, nom, adresse, cp, ville, latitude, longitude)
+		db = DAO()
+		db.execute("SET NAMES utf8;")
+		#db.execute("LOCK TABLES `installations` WRITE;")
+		db.execute("SET foreign_key_checks = 0")
+		db.execute(ajoutInstallations)
+		db.execute("SET foreign_key_checks = 1")
