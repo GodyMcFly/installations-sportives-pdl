@@ -4,22 +4,21 @@ from dao import *
 
 
 class equipements:
-    def __init__(self, numero, nom, numero_installation):
-        self.numero = numero
-        self.nom = nom
-        self.numero_installation = numero_installation
+    def __init__(self):
+
+        """Constructeur de notre classe"""
 
     def _get_numero(self):
-		return self.numero
+        return self.numero
 
     def _get_nom(self):
-		return self.nom
+        return self.nom
 
     def _get_numero_installation(self):
         return self.numero_installation
 
     def _set_numero(self, numero):
-		self.numero = numero
+        self.numero = numero
 
     def _set_nom(self, nom):
         self.nom = nom
@@ -28,15 +27,15 @@ class equipements:
         self.numero_installation
 
 
-    def Lecture(self, fichier):
+    def importEquipements(self, fichier):
         with open(fichier) as csvfile:
-            reader = csv.DictReader(csvfile)
+            reader = csv.reader(csvfile)
             for row in reader:
-                print(row)
+                self.ajout(row[4], row[3], row[2])
 
 
-    def ajout(self):
-        ajoutEquipement = 'INSERT IGNORE INTO equipement VALUES ("{}","{}","{}")'.format(self.numero, self.nom, self.numero_installation)
+    def ajout(self, numero, nom, numero_installation):
+        ajoutEquipement = 'INSERT IGNORE INTO equipement VALUES ("{}","{}","{}")'.format(numero, nom, numero_installation)
 
         db = DAO()
         db.execute("LOCK TABLES `equipement` WRITE;")
