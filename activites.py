@@ -19,7 +19,7 @@ class Activite:
 	def _set_nom(self, nom):
 		self.nom = nom
 
-	def Lecture(self, fichier):
+	def importActivites(self, fichier):
 		with open(fichier) as csvfile:
 			reader = csv.DictReader(csvfile)
 			for row in reader:
@@ -30,8 +30,6 @@ class Activite:
 
 		db = DAO()
 		db.execute("LOCK TABLES `activite` WRITE;")
-		db.execute("SET foreign_key_checks = 0")		
+		db.execute("SET foreign_key_checks = 0")
 		db.execute(ajoutActivte)
 		db.execute("SET foreign_key_checks = 1")
-
-
