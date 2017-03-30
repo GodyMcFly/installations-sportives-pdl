@@ -1,87 +1,52 @@
-# -*- coding: utf-8 -*-
-from libs.bottle import run, view, post, request, route, template, static_file
-import sys
-sys.path.append('../common/model/')
-from GestionDb import *
-from dict_app import Glob
+from dao import *
+from libs.bottle import route, static_file, run
+import json
+from urllib.parse import urlencode
+from urllib import request as req
 
-@route('/static/<filename:path>')
-def server_static(filename):
-	'''
-	Gestion des librairies static.
-	Routage des informations.
-	'''
-
-	return static_file(filename, root='static/')
+app = Bottle();
 
 @route('/')
-@view('template.tpl')
-def index():
-	'''
-	Fonction définissant le contexte de base.
-	Retourne des informations au template.tpl
-	'''
+def installation():
+	db = DAO()
+	data = db.get_rows("SELECT numero, nom from activite order by nom asc;")
+	data2 = db.get_rows("SELECT DISTINCT ville from installation order by ville asc;")
 
-	context = {'title': "Formulaire",
-				'titre': "Recherche",
-				'ville' : "request.params.ville",
-				'sport' : "request.params.sport",
-				'equipement' : "request.params.equipement"}
-	return (context)
-
-@route('/resultat')
-# @view('resultat.tpl')
-def resultat():
-	'''
-	Fonction permettant de générer un résultat.
-	Le résultat varie en fonction des mots-clés utilisateur.
-	Utilisation de HTTP.GET pour récupérer les informations.
-	Retourne les données du select au template resultat.
-	'''
-
-	# Objet base de données
-	db = GestionBD(Glob.host, Glob.user, Glob.passwd, Glob.dbName)
-
-	# Récupération des informations issues du formulaire
-	ville = request.GET.get('ville')
-	sport = request.GET.get('sport')
-	equipement = request.GET.get('equipement')
-	adresse = request.GET.get('adresse')
-	coordonees = request.GET.get('coord')
-
-	# Base fixe de la requête SQL select
-	SELECT = "select ville, equipement.nom, activite.nom, code_postal, adresse, CONCAT(longitude, CONCAT(' ', latitude)) "
-	TABLES = "from installation, equipement, equipement_activite, activite where installation.id_install = equipement.id_install and equipement.id_equip = equipement_activite.id_equipement and equipement_activite.id_activite = activite.id_activite "
-	DATAS = "and activite.nom like '%"+sport+"%' and equipement.nom like '%"+equipement+"%' "
-
-	req = SELECT+TABLES+DATAS
-
-	if (ville != '' or sport != '' or equipement != ''):
-		ville_composee = []
-		ville_composee = ville.split(" ")
-		# On parcourt tous les mots pouvant composer le nom d'une ville
-		# On permet d'avoir une recherche plus souple selon l'input
-		for mot in ville_composee:
-			req += "and ville like '%"+mot+"%' "
-		res = db.lireSelect(req)
-
-		return template('resultat',rows=res, adr=adresse, coord=coordonees)
-	else:
-		return template('error',msg="Vous devez au moins entrer un mot clé pour avoir un résultat.")
-	db.close()
+	liste = [data, data2]
+	output = template('src/IHM/index.tpl', rows=liste)
+	return output
 
 
-@route('/plan')
-@view('plan.tpl')
-def plan():
-	'''
-	Fonction à implanter.
-	Doit permettre d'afficher une map d'equipements / Installations
-	'''
+"""@route('/recherche')
+def recherche():
+	ville = request.query.ville
+	sport = request.query.sport
 
-	context = {'title' : 'Plan', 'contient' : "Ceci est du text !"}
+	db = dao._connect()
+	dbc = db.cursor()
 
-	return (context)
+	if(ville!="all" and sport!="all"):
+		dbc.execute("SELECT e.nom, i.nom, i.adresse, i.code_postal, i.ville, i.latitude, i.longitude from installation i, equipement e, equipement_activite ea, activite a where i.numero=e.numero_installation and e.numero=ea.numero_equipement and ea.numero_activite=a.numero and a.numero=\""+sport+"\" and i.ville=\""+ville+"\";")
+		output = template('src/IHM/resultat.tpl', rows=c)
+	if(ville=="all" and sport!="all"):
+		dbc.execute("SELECT e.nom, i.nom, i.adresse, i.code_postal, i.ville, i.latitude, i.longitude from installation i, equipement e, equipement_activite ea, activite a where i.numero=e.numero_installation and e.numero=ea.numero_equipement and ea.numero_activite=a.numero and a.numero=\""+sport+"\";")
+		output = template('src/IHM/resultat.tpl', rows=c)
+	if(ville!="all" and sport=="all"):
+		dbc.execute("SELECT a.nom, e.nom, i.nom, i.adresse, i.code_postal, i.ville, i.latitude, i.longitude from installation i, equipement e, equipement_activite ea, activite a where i.numero=e.numero_installation and e.numero=ea.numero_equipement and ea.numero_activite=a.numero and i.ville=\""+ville+"\";")
+		output = template('src/IHM/resultatSP.tpl', rows=c)
+	if(ville=="all" and sport=="all"):
+		dbc.execute("SELECT a.nom, e.nom, i.nom, i.adresse, i.code_postal, i.ville, i.latitude, i.longitude from installation i, equipement e, equipement_activite ea, activite a where i.numero=e.numero_installation and e.numero=ea.numero_equipement and ea.numero_activite=a.numero;")
+		output = template('src/IHM/resultatSP.tpl', rows=c)
+
+	c.close()
+	return output
+
+@route('/api/activites')
+def activites = allActivities()
+	jsonActivites = []
+	for activity in activities:
+		jsonActivites.append(activity.__dict__)
+	return { "activites" : jsonActivites }"""
 
 
-run(host='localhost', port=8081, reloader=True, debug=True)
+run(app, host='localhost', port=8888)
