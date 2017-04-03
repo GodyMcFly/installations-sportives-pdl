@@ -1,6 +1,7 @@
 import csv
 from dao import *
 
+
 # -*- coding: utf-8 -*-
 
 class installations:

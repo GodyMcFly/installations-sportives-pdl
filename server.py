@@ -1,4 +1,49 @@
+from bottle import route, template, run
 from dao import *
+
+@route('/coucou')
+def allActivite():
+	db = DAO()
+	db._connect()
+	listeActivite = db.get_rows("SELECT identifiant, nom FROM activite")
+	for row in listeActivite:
+		return (row)
+
+@route('/allo/<ville>')
+def getVille(ville):
+	db = DAO()
+	db._connect()
+	myVille = db.get_rows("SELECT ville from installation WHERE ville ="+ville+";")
+	for row in myVille:
+		return template('<b>{{ville}}</b>!', ville=ville)
+
+run(host='localhost', port=8888)
+"""
+
+from bottle import route, template, run
+from dao import *
+from activites import *
+
+@route('/api/activities')
+def getActivities():
+    db = DAO()
+    db.connect()
+    listeActivite = db.get_rows("SELECT identifiant, nom FROM activite")
+    for row in listeActivite:
+    	print (row)
+    jsonActivities = []
+    for activity in listeActivite:
+        jsonActivities.append(activity.__dict__)
+    return { "listeActivite" : jsonActivities }
+
+@route('/<filepath:path>')
+def server_static(filepath):
+    return static_file(filepath, root='./public')
+
+run(host='localhost', port=8888)
+"""
+
+"""from dao import *
 from libs.bottle import route, static_file, run
 import json
 from urllib.parse import urlencode
@@ -15,7 +60,7 @@ def installation():
 	liste = [data, data2]
 	output = template('src/IHM/index.tpl', rows=liste)
 	return output
-
+"""
 
 """@route('/recherche')
 def recherche():
@@ -49,4 +94,3 @@ def activites = allActivities()
 	return { "activites" : jsonActivites }"""
 
 
-run(app, host='localhost', port=8888)
